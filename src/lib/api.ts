@@ -1,39 +1,29 @@
-/**
- * API Utility
- * 
- * Helper functions untuk fetch data dari backend API
- * Kamu bisa modify atau extend sesuai kebutuhan
- */
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-/**
- * Generic fetch function dengan error handling
- */
-async function fetchAPI<T>(endpoint: string): Promise<T> {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`);
-    
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+// --- Request Interceptor ---
+api.interceptors.request.use(
+  (config) => {
+    // Ambil token dari cookie di sisi client
+    const token = Cookies.get('auth_token');
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('API Fetch Error:', error);
-    throw error;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-}
+);
 
-// TODO: Implement API functions sesuai dengan endpoint yang tersedia
-// Contoh:
-// export async function getBlogPosts() {
-//   return fetchAPI<BlogPost[]>('/posts');
-// }
-//
-// export async function getBlogPost(id: string) {
-//   return fetchAPI<BlogPost>(`/posts/${id}`);
-// }
 
-export { fetchAPI, API_BASE_URL };
+export default api;

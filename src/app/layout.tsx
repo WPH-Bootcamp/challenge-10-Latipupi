@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from 'next/font/google'
 import "./globals.css";
+import Providers from "@/shared/components/Provider";
+import { Toaster } from "sonner";
+import Navbar from "@/shared/components/navbar/Navbar";
+import Footer from "@/shared/components/footer/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: "Blog App Challenge",
@@ -25,9 +24,14 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={inter.variable}
       >
-        {children}
+        <Providers>
+          <Navbar />
+          <Toaster />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
